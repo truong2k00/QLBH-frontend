@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
+
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 
 import logo from '@images/logo.svg?raw'
@@ -7,21 +8,61 @@ import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@images/pages/auth-v1-tree.png'
+import setAuthHeader from '@/plugins/setAuthHeader'
+import login from '@/services/auth/login'
+import { AuthMessage } from '@/common/constants/auth'
+import { ITokenRes } from '@/interfaces/res/IToken.res'
+import { error } from 'console'
 
-const app_title = import.meta.env.VITE_APP_TITLE
+import localStorageKey from '@/common/constants/LocalStorageKey'
 
+const base = import.meta.env.BASE_URL
+const route = useRoute()
+const router = useRouter()
+
+const err = ref({
+  errcheck: false,
+  errmessage: '',
+})
 const form = ref({
   email: '',
   password: '',
   remember: false,
 })
 
+onMounted(() => {
+  localStorage.removeItem(localStorageKey.ACCESS_TOKEN)
+  localStorage.removeItem(localStorageKey.USER_DATA)
+})
+const loginUser = async () => {
+  try {
+    const res = await login(form.value.email, form.value.password)
+
+    if (res) {
+      setAuthHeader(res.AccessToken)
+      localStorage.setItem(localStorageKey.ACCESS_TOKEN, res.RefreshToken)
+      router.replace(route.query.to ? String(route.query.to) : '/')
+    } else {
+      err.value.errmessage = AuthMessage.LoginFail
+      err.value.errcheck = true
+      // Xử lý thông báo lỗi hoặc các xử lý khác ở đây
+    }
+    // Gán dữ liệu vào biến tham chiếu
+  } catch (error) {
+    err.value.errmessage = AuthMessage.LoginError
+    err.value.errcheck = true
+  }
+}
 const vuetifyTheme = useTheme()
 
 const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark
 })
 
+onMounted(() => {
+  localStorage.removeItem(localStorageKey.ACCESS_TOKEN)
+  localStorage.removeItem(localStorageKey.USER_DATA)
+})
 const isPasswordVisible = ref(false)
 </script>
 
@@ -44,7 +85,11 @@ const isPasswordVisible = ref(false)
           {{ app_title }}
         </VCardTitle>
       </VCardItem>
-
+      <VCardText
+        v-if="err.errcheck"
+        class="front-bold"
+        >{{ err.errmessage }}</VCardText
+      >
       <VCardText class="pt-2">
         <h5 class="text-h5 font-weight-semibold mb-1">Welcome to {{ app_title }}! 👋🏻</h5>
         <p class="mb-0">Please sign-in to your account and start the adventure</p>
@@ -92,7 +137,7 @@ const isPasswordVisible = ref(false)
               <VBtn
                 block
                 type="submit"
-                to="/"
+                @click="loginUser()"
               >
                 Login
               </VBtn>
@@ -155,4 +200,12 @@ const isPasswordVisible = ref(false)
 
 <style lang="scss">
 @use '@core/scss/pages/page-auth.scss';
+.front-bold {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+}
 </style>
+
+function setAuthHeader(arg0: null) { throw new Error('Function not implemented.') } function setAuthHeader(arg0: null) {
+throw new Error('Function not implemented.') }

@@ -1,4 +1,5 @@
 import { router } from '@/plugins/router/router_config/routes'
+import login from '@/services/auth/login'
 export const routes = [
   { path: '/', redirect: '/dashboard' },
   {
@@ -12,10 +13,12 @@ export const routes = [
     children: [
       {
         path: 'login',
+        name: 'login',
         component: () => import('@/pages/login.vue'),
       },
       {
         path: 'register',
+        name: 'register',
         component: () => import('@/pages/register.vue'),
       },
       {

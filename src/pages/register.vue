@@ -9,9 +9,12 @@ import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@images/pages/auth-v1-tree.png'
 const app_title = import.meta.env.VITE_APP_TITLE
 const form = ref({
-  username: '',
+  fullName: '',
+  userName: '',
+  passWord: '',
+  newPassword: '',
+  phone_Number: '',
   email: '',
-  password: '',
   privacyPolicies: false,
 })
 
@@ -53,7 +56,21 @@ const isPasswordVisible = ref(false)
             <!-- Username -->
             <VCol cols="12">
               <VTextField
-                v-model="form.username"
+                v-model="form.fullName"
+                label="fullname"
+                placeholder="fullname"
+              />
+            </VCol>
+            <VCol cols="12">
+              <VTextField
+                v-model="form.phone_Number"
+                label="phone"
+                placeholder="phone"
+              />
+            </VCol>
+            <VCol cols="12">
+              <VTextField
+                v-model="form.userName"
                 label="Username"
                 placeholder="Johndoe"
               />
@@ -71,8 +88,16 @@ const isPasswordVisible = ref(false)
             <!-- password -->
             <VCol cols="12">
               <VTextField
-                v-model="form.password"
+                v-model="form.passWord"
                 label="Password"
+                placeholder="············"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              />
+              <VTextField
+                v-model="form.newPassword"
+                label="New Password"
                 placeholder="············"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
